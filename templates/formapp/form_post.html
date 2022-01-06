@@ -7,12 +7,6 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-<form method="POST">
-  {% csrf_token %}
-  <table>
-    {{form.as_table}}
-  </table>
-  <input type="submit" value="送信">
-</form>
+  {% include "formapp/form_template2.html" with as_ul=True method='GET' action='/aaa' %}
 </body>
 </html>

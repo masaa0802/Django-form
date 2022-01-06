@@ -54,14 +54,46 @@ class UserInfo(forms.Form):
     if mail != verify_mail:
       raise forms.ValidationError('メールアドレスが一致しません')
   
-class PostModelForm(forms.ModelForm):
+class BaseForm(forms.ModelForm):
+  def save(self, *args, **kwargs):
+      print(f'Form: {self.__class__.__name__}実行')
+      return super(BaseForm, self).save(*args, **kwargs)
 
+class PostModelForm(BaseForm):
+  name = forms.CharField(label='名前')
+  title = forms.CharField(label='タイトル')
   memo = forms. CharField(
-    widget=forms.Textarea(attrs={'rows':30, 'cols': 20})
+    label ='メモ', widget=forms.Textarea(attrs={'rows':30, 'cols': 20})
   )
 
   class Meta:
     model = Post
-    # fields = '__all__'
+    fields = '__all__'
     # fields = ['name', 'title']
-    exclude = ['title']
+    # exclude = ['title']
+
+  def save(self, *args, **kwargs):
+    obj = super(PostModelForm, self).save(commit=False, *args, **kwargs)
+    obj.name = obj.name.upper()
+    print(type(obj))
+    print('save実行')
+    obj.save()
+    return obj
+
+  def clean_name(self):
+    name = self.cleaned_data.get('name')
+    if name == 'ああああ':
+      raise validators.ValidationError('名前が登録できません')
+      return name
+  def clean_title(self):
+    title = self.cleaned_data.get('title')
+    if title == 'ああああ':
+      raise validators.ValidationError('そのタイトルは登録できません')
+      return title
+
+  def clean(self):
+    cleaned_data = super().clean()
+    title = cleaned_data.get('title')
+    is_exists = Post.objects.filter(title=title).first()
+    if is_exists:
+      raise validators.ValidationError('そのタイトルは既に存在しています')
