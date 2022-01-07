@@ -1,7 +1,7 @@
 from django import forms
 from django.core import validators
-from django.forms import fields, widgets
-from .models import Post
+
+from .models import Post, ModelSetPost
 
 
 def check_name(value):
@@ -97,3 +97,15 @@ class PostModelForm(BaseForm):
     is_exists = Post.objects.filter(title=title).first()
     if is_exists:
       raise validators.ValidationError('そのタイトルは既に存在しています')
+
+class FormSetPost(forms.Form):
+  title = forms.CharField(label='タイトル')
+  memo = forms.CharField(label='メモ')
+
+class ModelFormSetPost(forms.ModelForm):
+  title = forms.CharField(label='タイトル')
+  memo = forms.CharField(label='メモ')
+
+  class Meta:
+    model = ModelSetPost
+    fields = '__all__'

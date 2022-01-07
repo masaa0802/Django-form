@@ -6,3 +6,6 @@ class Post(models.Model):
   title = models.CharField(max_length=255)
   memo = models.CharField(max_length=255)
   
+class ModelSetPost(models.Model):
+  title = models.CharField(max_length=255)
+  memo = models.CharField(max_length=255)
